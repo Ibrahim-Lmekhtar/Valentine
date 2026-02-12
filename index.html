@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sara ❤️</title>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    overflow:hidden;
+    font-family: 'Segoe UI', sans-serif;
+    background: black;
+    color:white;
+    text-align:center;
+}
+
+/* STAR BACKGROUND */
+canvas {
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:-1;
+}
+
+/* INTRO */
+#intro {
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:black;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:2em;
+    transition:opacity 3s;
+    z-index:10;
+}
+
+/* MAIN */
+.container {
+    display:none;
+    padding-top:80px;
+}
+
+h1 { font-size:2.5em; margin-bottom:20px; }
+
+#letter {
+    min-height:80px;
+    margin-bottom:20px;
+}
+
+#countdown {
+    font-size:1.2em;
+    margin-bottom:30px;
+    color:#ff4da6;
+}
+
+.buttons {
+    position:relative;
+    height:200px;
+}
+
+button {
+    padding:15px 30px;
+    font-size:1.1em;
+    border:none;
+    border-radius:40px;
+    cursor:pointer;
+    position:absolute;
+    transition:0.3s;
+}
+
+#yesBtn {
+    background:#ff0055;
+    color:white;
+    left:30%;
+}
+
+#noBtn {
+    background:white;
+    color:#ff0055;
+    left:60%;
+}
+
+#finalMessage {
+    display:none;
+    font-size:2em;
+    margin-top:30px;
+}
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<div id="intro">For Sara... The love of my life ❤️</div>
+
+<audio id="bgMusic" src="music.mp3" loop></audio>
+
+<div class="container">
+    <h1>Sara... 💖</h1>
+    <div id="letter"></div>
+    <div id="countdown"></div>
+
+    <div class="buttons">
+        <button id="yesBtn">YES ❤️</button>
+        <button id="noBtn">No 🙄</button>
+    </div>
+
+    <div id="finalMessage">You just made me the happiest man alive 💍❤️</div>
+</div>
+
+<script>
+/* STAR BACKGROUND */
+const canvas = document.getElementById("stars");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let stars = [];
+for(let i=0;i<200;i++){
+    stars.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        radius:Math.random()*1.5,
+        speed:Math.random()*0.5
+    });
+}
+
+function animateStars(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle="white";
+    stars.forEach(star=>{
+        ctx.beginPath();
+        ctx.arc(star.x,star.y,star.radius,0,Math.PI*2);
+        ctx.fill();
+        star.y+=star.speed;
+        if(star.y>canvas.height) star.y=0;
+    });
+    requestAnimationFrame(animateStars);
+}
+animateStars();
+
+/* INTRO */
+const intro=document.getElementById("intro");
+const container=document.querySelector(".container");
+const music=document.getElementById("bgMusic");
+
+setTimeout(()=>{
+    intro.style.opacity=0;
+    setTimeout(()=>{
+        intro.style.display="none";
+        container.style.display="block";
+        music.play().catch(()=>{});
+        typeLetter();
+    },3000);
+},2000);
+
+/* TYPING LETTER */
+const text="From the moment I met you, everything changed... You are my happiness, my peace, my forever. And now I have one question for you...";
+let i=0;
+function typeLetter(){
+    if(i<text.length){
+        document.getElementById("letter").innerHTML+=text.charAt(i);
+        i++;
+        setTimeout(typeLetter,50);
+    }
+}
+
+/* COUNTDOWN */
+function updateCountdown(){
+    const valentines=new Date("Feb 14, 2026 00:00:00").getTime();
+    const now=new Date().getTime();
+    const diff=valentines-now;
+
+    const d=Math.floor(diff/(1000*60*60*24));
+    const h=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+    const m=Math.floor((diff%(1000*60*60))/(1000*60));
+    const s=Math.floor((diff%(1000*60))/1000);
+
+    document.getElementById("countdown").innerHTML=
+        "Countdown to Valentine’s Day: "+d+"d "+h+"h "+m+"m "+s+"s";
+}
+setInterval(updateCountdown,1000);
+
+/* BUTTON LOGIC */
+let noSize=1, yesSize=1;
+const noBtn=document.getElementById("noBtn");
+const yesBtn=document.getElementById("yesBtn");
+
+noBtn.addEventListener("mouseover",()=>{
+    noBtn.style.left=Math.random()*80+"%";
+    noBtn.style.top=Math.random()*150+"px";
+
+    noSize-=0.1;
+    yesSize+=0.1;
+
+    if(noSize<=0){ noBtn.style.display="none"; }
+    else{ noBtn.style.transform=`scale(${noSize})`; }
+
+    yesBtn.style.transform=`scale(${yesSize})`;
+});
+
+yesBtn.addEventListener("click",()=>{
+    if(confirm("Are you REALLY sure? 😍")){
+        document.querySelector(".buttons").style.display="none";
+        document.getElementById("finalMessage").style.display="block";
+        launchFireworks();
+    }
+});
+
+/* FIREWORKS */
+function launchFireworks(){
+    for(let i=0;i<10;i++){
+        setTimeout(()=>{
+            let x=Math.random()*window.innerWidth;
+            let y=Math.random()*window.innerHeight/2;
+            for(let j=0;j<50;j++){
+                let spark=document.createElement("div");
+                spark.style.position="absolute";
+                spark.style.width="4px";
+                spark.style.height="4px";
+                spark.style.background=`hsl(${Math.random()*360},100%,50%)`;
+                spark.style.left=x+"px";
+                spark.style.top=y+"px";
+                spark.style.borderRadius="50%";
+                document.body.appendChild(spark);
+
+                let angle=Math.random()*2*Math.PI;
+                let distance=Math.random()*200;
+
+                spark.animate([
+                    {transform:"translate(0,0)",opacity:1},
+                    {transform:`translate(${Math.cos(angle)*distance}px,${Math.sin(angle)*distance}px)`,opacity:0}
+                ],{
+                    duration:1500,
+                    easing:"ease-out"
+                });
+
+                setTimeout(()=>spark.remove(),1500);
+            }
+        },i*500);
+    }
+}
+</script>
+</body>
+</html>
