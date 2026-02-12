@@ -3,66 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sara ❤️</title>
+<title>For Sara ❤️</title>
 
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
+*{margin:0;padding:0;box-sizing:border-box;}
 
-body {
+body{
+    background:black;
     overflow:hidden;
-    font-family: 'Segoe UI', sans-serif;
-    background: black;
+    font-family:'Segoe UI',sans-serif;
     color:white;
     text-align:center;
 }
 
-/* STAR BACKGROUND */
-canvas {
+/* STAR CANVAS */
+canvas{
     position:fixed;
     top:0;
     left:0;
     z-index:-1;
 }
 
-/* INTRO */
-#intro {
-    position:absolute;
+/* INTRO SCREEN */
+#intro{
+    position:fixed;
     width:100%;
     height:100%;
     background:black;
     display:flex;
     justify-content:center;
     align-items:center;
+    flex-direction:column;
     font-size:2em;
-    transition:opacity 3s;
-    z-index:10;
+    cursor:pointer;
+    transition:opacity 2s;
 }
 
-/* MAIN */
-.container {
+/* MAIN CONTENT */
+.container{
     display:none;
     padding-top:80px;
 }
 
-h1 { font-size:2.5em; margin-bottom:20px; }
-
-#letter {
-    min-height:80px;
+h1{
+    font-size:2.5em;
     margin-bottom:20px;
 }
 
-#countdown {
-    font-size:1.2em;
+#letter{
+    min-height:80px;
+    margin-bottom:20px;
+    padding:0 20px;
+}
+
+#countdown{
     margin-bottom:30px;
     color:#ff4da6;
 }
 
-.buttons {
+.buttons{
     position:relative;
     height:200px;
 }
 
-button {
+button{
     padding:15px 30px;
     font-size:1.1em;
     border:none;
@@ -72,19 +76,19 @@ button {
     transition:0.3s;
 }
 
-#yesBtn {
+#yesBtn{
     background:#ff0055;
     color:white;
     left:30%;
 }
 
-#noBtn {
+#noBtn{
     background:white;
     color:#ff0055;
     left:60%;
 }
 
-#finalMessage {
+#finalMessage{
     display:none;
     font-size:2em;
     margin-top:30px;
@@ -95,7 +99,12 @@ button {
 
 <canvas id="stars"></canvas>
 
-<div id="intro">For Sara... The love of my life ❤️</div>
+<div id="intro" onclick="startExperience()">
+    <div>For Sara... ❤️</div>
+    <div style="font-size:0.6em;margin-top:20px;">
+        Click anywhere to begin ✨
+    </div>
+</div>
 
 <audio id="bgMusic" src="music.mp3" loop></audio>
 
@@ -109,23 +118,42 @@ button {
         <button id="noBtn">No 🙄</button>
     </div>
 
-    <div id="finalMessage">You just made me the happiest man alive 💍❤️</div>
+    <div id="finalMessage">
+        You just made me the happiest man alive 💍❤️
+    </div>
 </div>
 
 <script>
-/* STAR BACKGROUND */
-const canvas = document.getElementById("stars");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
 
-let stars = [];
+/* ===== START EXPERIENCE ===== */
+function startExperience(){
+    const intro=document.getElementById("intro");
+    const container=document.querySelector(".container");
+    const music=document.getElementById("bgMusic");
+
+    music.play().catch(()=>{});
+
+    intro.style.opacity=0;
+    setTimeout(()=>{
+        intro.style.display="none";
+        container.style.display="block";
+        typeLetter();
+    },2000);
+}
+
+/* ===== STAR BACKGROUND ===== */
+const canvas=document.getElementById("stars");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let stars=[];
 for(let i=0;i<200;i++){
     stars.push({
         x:Math.random()*canvas.width,
         y:Math.random()*canvas.height,
-        radius:Math.random()*1.5,
-        speed:Math.random()*0.5
+        r:Math.random()*1.5,
+        s:Math.random()*0.5
     });
 }
 
@@ -134,42 +162,27 @@ function animateStars(){
     ctx.fillStyle="white";
     stars.forEach(star=>{
         ctx.beginPath();
-        ctx.arc(star.x,star.y,star.radius,0,Math.PI*2);
+        ctx.arc(star.x,star.y,star.r,0,Math.PI*2);
         ctx.fill();
-        star.y+=star.speed;
+        star.y+=star.s;
         if(star.y>canvas.height) star.y=0;
     });
     requestAnimationFrame(animateStars);
 }
 animateStars();
 
-/* INTRO */
-const intro=document.getElementById("intro");
-const container=document.querySelector(".container");
-const music=document.getElementById("bgMusic");
-
-setTimeout(()=>{
-    intro.style.opacity=0;
-    setTimeout(()=>{
-        intro.style.display="none";
-        container.style.display="block";
-        music.play().catch(()=>{});
-        typeLetter();
-    },3000);
-},2000);
-
-/* TYPING LETTER */
+/* ===== TYPING LETTER ===== */
 const text="From the moment I met you, everything changed... You are my happiness, my peace, my forever. And now I have one question for you...";
-let i=0;
+let index=0;
 function typeLetter(){
-    if(i<text.length){
-        document.getElementById("letter").innerHTML+=text.charAt(i);
-        i++;
-        setTimeout(typeLetter,50);
+    if(index<text.length){
+        document.getElementById("letter").innerHTML+=text.charAt(index);
+        index++;
+        setTimeout(typeLetter,40);
     }
 }
 
-/* COUNTDOWN */
+/* ===== COUNTDOWN ===== */
 function updateCountdown(){
     const valentines=new Date("Feb 14, 2026 00:00:00").getTime();
     const now=new Date().getTime();
@@ -181,11 +194,11 @@ function updateCountdown(){
     const s=Math.floor((diff%(1000*60))/1000);
 
     document.getElementById("countdown").innerHTML=
-        "Countdown to Valentine’s Day: "+d+"d "+h+"h "+m+"m "+s+"s";
+    "Countdown to Valentine’s Day: "+d+"d "+h+"h "+m+"m "+s+"s";
 }
 setInterval(updateCountdown,1000);
 
-/* BUTTON LOGIC */
+/* ===== BUTTON LOGIC ===== */
 let noSize=1, yesSize=1;
 const noBtn=document.getElementById("noBtn");
 const yesBtn=document.getElementById("yesBtn");
@@ -211,13 +224,13 @@ yesBtn.addEventListener("click",()=>{
     }
 });
 
-/* FIREWORKS */
+/* ===== FIREWORKS ===== */
 function launchFireworks(){
-    for(let i=0;i<10;i++){
+    for(let i=0;i<8;i++){
         setTimeout(()=>{
             let x=Math.random()*window.innerWidth;
             let y=Math.random()*window.innerHeight/2;
-            for(let j=0;j<50;j++){
+            for(let j=0;j<60;j++){
                 let spark=document.createElement("div");
                 spark.style.position="absolute";
                 spark.style.width="4px";
@@ -241,7 +254,7 @@ function launchFireworks(){
 
                 setTimeout(()=>spark.remove(),1500);
             }
-        },i*500);
+        },i*600);
     }
 }
 </script>
